@@ -5,6 +5,7 @@ const cheerio = require('cheerio')
 
 const messorteUrl = 'https://www.lanuv.nrw.de/luqs/messorte/messorte.php'
 const steckbriefUrl = 'https://www.lanuv.nrw.de/luqs/messorte/steckbrief.php?ort='
+const messwerteUrl = 'https://www.lanuv.nrw.de/fileadmin/lanuv/luft/immissionen/aktluftqual/eu_luft_akt.htm'
 
 const KUERZEL_LENGTH = 4
 
@@ -62,7 +63,7 @@ const luqs = (options = {}) => {
  * @param string kuerzel
  * @returns Promise resolves with an object
  */
-luqs.station = (kuerzel) => {
+luqs.station = (kuerzel, options = {}) => {
   if (typeof kuerzel !== 'string') {
     return Promise.reject(new TypeError('Expected a string'))
   }
@@ -83,6 +84,27 @@ luqs.station = (kuerzel) => {
           const data = $(tableRow).text().trim().split('\n')
           resolve(data)
         })
+      })
+      .catch(error => {
+        reject(error)
+      })
+  })
+}
+
+luqs.aktuell = (options = {}) => {
+  return new Promise((resolve, reject) => {
+    query(messwerteUrl)
+      .then($ => {
+        const tableRows = $('table.rahmen')
+        const results = []
+        $(tableRows).find('tr').each(function (_, tableRow) {
+          const data = []
+          $(tableRow).find('td').each(function (index, tableData) {
+            data.push($(tableData).text().trim().split('\n')[0])
+          })
+          results.push(data)
+        })
+        resolve(results)
       })
       .catch(error => {
         reject(error)
