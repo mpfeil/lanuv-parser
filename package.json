@@ -5,10 +5,13 @@
   "license": "MIT",
   "dependencies": {
     "cheerio": "^1.0.0-rc.3",
-    "pg": "^7.12.1",
     "request": "^2.88.0"
   },
+  "scripts": {
+    "test": "ava"
+  },
   "devDependencies": {
+    "ava": "^2.4.0",
     "eslint": "^6.6.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-plugin-import": "^2.18.2",

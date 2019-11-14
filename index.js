@@ -1,26 +1,93 @@
-const util = require('util');
-const request = require('request');
-const cheerio = require('cheerio');
+'use strict'
 
-const url = 'https://www.lanuv.nrw.de/luqs/messorte/messorte.php';
+const request = require('request')
+const cheerio = require('cheerio')
 
-const rp = util.promisify(request);
+const messorteUrl = 'https://www.lanuv.nrw.de/luqs/messorte/messorte.php'
+const steckbriefUrl = 'https://www.lanuv.nrw.de/luqs/messorte/steckbrief.php?ort='
 
-const run = async () => {
-  try {
-    const page = await rp(url);
-    const body = page.body;
+const KUERZEL_LENGTH = 4
 
-    const $ = cheerio.load(body);
-    const tableRows = $('#wrapper > table > tbody > tr');
+const query = (url) => {
+  return new Promise((resolve, reject) => {
+    request(url, function (error, response, body) {
+      if (error) {
+        reject(error)
+      }
 
-    $(tableRows).each(function (i, tableRow) {
-      const data = $(tableRow).text().trim().split('\n');
-      console.log(data);
-    });
-  } catch (error) {
-    console.log('ERROR');
-  }
+      // Wrong URL is redirected and error is null
+      if (response.statusCode >= 400) {
+        reject(response.statusMessage)
+      }
+
+      resolve(cheerio.load(body))
+    })
+  })
 }
 
-run();
+/**
+ * Requests LUQS stations website and parse stations table.
+ *
+ * @param {*} options
+ * @returns Promise resolves with an array of all luqs stations
+ */
+const luqs = (options = {}) => {
+  return new Promise((resolve, reject) => {
+    query(messorteUrl)
+      .then($ => {
+        const stations = []
+        const tableRows = $('#wrapper > table > tbody > tr')
+        $(tableRows).each(function (_, tableRow) {
+          const data = $(tableRow).text().trim().split('\n')
+          const station = {
+            messort: data[0],
+            kuerzel: data[1],
+            plz: data[2],
+            standort: data[3]
+          }
+          stations.push(station)
+        })
+        resolve(stations)
+      })
+      .catch(error => {
+        reject(error)
+      })
+  })
+}
+
+/**
+ * Requests details page of a LUQS station and parses
+ * details of the station.
+ *
+ * @param string kuerzel
+ * @returns Promise resolves with an object
+ */
+luqs.station = (kuerzel) => {
+  if (typeof kuerzel !== 'string') {
+    return Promise.reject(new TypeError('Expected a string'))
+  }
+
+  if (kuerzel.length < KUERZEL_LENGTH) {
+    return Promise.reject(new Error('Kuerzel is to short'))
+  }
+
+  if (kuerzel.length > KUERZEL_LENGTH) {
+    return Promise.reject(new Error('Kuerzel is to long'))
+  }
+
+  return new Promise((resolve, reject) => {
+    query(steckbriefUrl + kuerzel)
+      .then($ => {
+        const tableRows = $('#wrapper > table.table_details')
+        $(tableRows).each(function (_, tableRow) {
+          const data = $(tableRow).text().trim().split('\n')
+          resolve(data)
+        })
+      })
+      .catch(error => {
+        reject(error)
+      })
+  })
+}
+
+module.exports = luqs
