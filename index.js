@@ -10,6 +10,12 @@ const messwerteUrl = 'https://www.lanuv.nrw.de/fileadmin/lanuv/luft/immissionen/
 
 const KUERZEL_LENGTH = 4
 
+/**
+ * Helper function to query a url and load
+ * response with cheeriojs
+ *
+ * @param {String} url
+ */
 const query = (url) => {
   return new Promise((resolve, reject) => {
     request(url, function (error, response, body) {
@@ -128,7 +134,14 @@ luqs.aktuell = (options = {}) => {
             data.push($(tableData).text().trim().split('\n')[0])
           })
           const station = {};
-          [station.station, station.kuerzel, station.ozon, station.so2, station.no2, station.pm10] = data
+          [
+            station.station,
+            station.kuerzel,
+            station.ozon,
+            station.so2,
+            station.no2,
+            station.pm10
+          ] = data
           results.push(station)
         })
         resolve(results)
@@ -140,3 +153,4 @@ luqs.aktuell = (options = {}) => {
 }
 
 module.exports = luqs
+module.exports.default = luqs
