@@ -40,12 +40,8 @@ const luqs = (options = {}) => {
         const tableRows = $('#wrapper > table > tbody > tr')
         $(tableRows).each(function (_, tableRow) {
           const data = $(tableRow).text().trim().split('\n')
-          const station = {
-            messort: data[0],
-            kuerzel: data[1],
-            plz: data[2],
-            standort: data[3]
-          }
+          const station = {};
+          [station.messort, station.kuerzel, station.plz, station.standort] = data
           stations.push(station)
         })
         resolve(stations)
