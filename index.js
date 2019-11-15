@@ -4,6 +4,7 @@ const request = require('request')
 const cheerio = require('cheerio')
 
 const messorteUrl = 'https://www.lanuv.nrw.de/luqs/messorte/messorte.php'
+const messortBildUrl = 'https://www.lanuv.nrw.de/luqs/messorte/bilder/'
 const steckbriefUrl = 'https://www.lanuv.nrw.de/luqs/messorte/steckbrief.php?ort='
 const messwerteUrl = 'https://www.lanuv.nrw.de/fileadmin/lanuv/luft/immissionen/aktluftqual/eu_luft_akt.htm'
 
@@ -96,6 +97,7 @@ luqs.station = (kuerzel, options = {}) => {
           steckbrief.start_messung,
           steckbrief.ende_messung
         ] = tmpSteckbrief
+        steckbrief.image = `${messortBildUrl}${steckbrief.kuerzel.toUpperCase()}.jpg`
         resolve([steckbrief])
       })
       .catch(error => {
@@ -104,18 +106,30 @@ luqs.station = (kuerzel, options = {}) => {
   })
 }
 
+/**
+ * Query and parse overview page of current LUQS measurements.
+ *
+ * @returns Array with current measured values
+ */
 luqs.aktuell = (options = {}) => {
   return new Promise((resolve, reject) => {
     query(messwerteUrl)
       .then($ => {
         const tableRows = $('table.rahmen')
         const results = []
-        $(tableRows).find('tr').each(function (_, tableRow) {
+        $(tableRows).find('tr').each(function (index, tableRow) {
+          // Skip first to table rows
+          if (index < 2) {
+            return
+          }
+
           const data = []
           $(tableRow).find('td').each(function (index, tableData) {
             data.push($(tableData).text().trim().split('\n')[0])
           })
-          results.push(data)
+          const station = {};
+          [station.station, station.kuerzel, station.ozon, station.so2, station.no2, station.pm10] = data
+          results.push(station)
         })
         resolve(results)
       })
