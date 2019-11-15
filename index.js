@@ -75,11 +75,28 @@ luqs.station = (kuerzel, options = {}) => {
   return new Promise((resolve, reject) => {
     query(steckbriefUrl + kuerzel)
       .then($ => {
-        const tableRows = $('#wrapper > table.table_details')
+        const tableRows = $('#wrapper > table.table_details > tbody > tr')
+        const tmpSteckbrief = []
         $(tableRows).each(function (_, tableRow) {
-          const data = $(tableRow).text().trim().split('\n')
-          resolve(data)
+          $(tableRow).find('td.td_details').each(function (_, tableData) {
+            const data = $(tableData).text().trim().split('\n')
+            tmpSteckbrief.push(...data)
+          })
         })
+        const steckbrief = {};
+        [
+          steckbrief.eu_kennung,
+          steckbrief.kuerzel,
+          steckbrief.adresse,
+          steckbrief.altitude,
+          steckbrief.umgebung,
+          steckbrief.longitude,
+          steckbrief.standort,
+          steckbrief.latitude,
+          steckbrief.start_messung,
+          steckbrief.ende_messung
+        ] = tmpSteckbrief
+        resolve([steckbrief])
       })
       .catch(error => {
         reject(error)
