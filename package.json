@@ -1,14 +1,37 @@
 {
   "name": "lanuv-parser",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Parse LANUV website for LUQS (Air Quality) stations",
   "license": "MIT",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.3",
-    "request": "^2.88.0"
+  "repository": "mpfeil/lanuv-parser",
+  "author": {
+    "name": "Matthias Pfeil",
+    "email": "matthias.pfeil@wwu.de"
+  },
+  "engines": {
+    "node": ">=10"
   },
   "scripts": {
     "test": "ava"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "lanuv",
+    "luqs",
+    "air quality",
+    "nrw",
+    "measurements",
+    "stations",
+    "pm10",
+    "no2",
+    "so2",
+    "ozon"
+  ],
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "request": "^2.88.0"
   },
   "devDependencies": {
     "ava": "^2.4.0",
