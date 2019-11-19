@@ -52,7 +52,7 @@ const luqs = (options = {}) => {
           [station.messort, station.kuerzel, station.plz, station.standort] = data
           stations.push(station)
         })
-        resolve(stations)
+        resolve(stations.splice(1, stations.length))
       })
       .catch(error => {
         reject(error)
