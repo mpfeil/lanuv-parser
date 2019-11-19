@@ -4,7 +4,7 @@ import luqs from '.'
 test('luqs()', async t => {
   const stations = await luqs()
   t.truthy(Array.isArray(stations))
-  t.is(stations.length, 166)
+  t.is(stations.length, 165)
 })
 
 test('luqs.station() should reject with TypeError', async t => {
@@ -18,7 +18,7 @@ test('luqs.station() should reject with Error is to short', async t => {
 })
 
 test('luqs.station() should reject with Error is to long', async t => {
-  const error = await t.throwsAsync(luqs.station('AAAAA'))
+  const error = await t.throwsAsync(luqs.station('AAAAAAA'))
   t.is(error.message, 'Kuerzel is to long')
 })
 
