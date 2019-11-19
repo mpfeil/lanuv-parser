@@ -1,25 +1,12 @@
 const luqs = require('.')
 
-luqs()
-  .then(response => {
-    console.log(response)
-  })
-  .catch(error => {
-    console.log(error)
-  })
+const run = async () => {
+  const stations = await luqs()
+  console.log(stations)
+  const unna = await luqs.station('unna')
+  console.log(unna)
+  const currentMeasurements = await luqs.aktuell()
+  console.log(currentMeasurements)
+}
 
-luqs.station('unna')
-  .then(response => {
-    console.log(response)
-  })
-  .catch(error => {
-    console.log(error)
-  })
-
-luqs.aktuell()
-  .then(response => {
-    console.log(response)
-  })
-  .catch(error => {
-    console.log(error)
-  })
+run()
