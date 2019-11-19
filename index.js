@@ -8,7 +8,8 @@ const messortBildUrl = 'https://www.lanuv.nrw.de/luqs/messorte/bilder/'
 const steckbriefUrl = 'https://www.lanuv.nrw.de/luqs/messorte/steckbrief.php?ort='
 const messwerteUrl = 'https://www.lanuv.nrw.de/fileadmin/lanuv/luft/immissionen/aktluftqual/eu_luft_akt.htm'
 
-const KUERZEL_LENGTH = 4
+const MIN_KUERZEL_LENGTH = 4
+const MAX_KUERZEL_LENGTH = 6
 
 /**
  * Helper function to query a url and load
@@ -71,11 +72,11 @@ luqs.station = (kuerzel, options = {}) => {
     return Promise.reject(new TypeError('Expected a string'))
   }
 
-  if (kuerzel.length < KUERZEL_LENGTH) {
+  if (kuerzel.length < MIN_KUERZEL_LENGTH) {
     return Promise.reject(new Error('Kuerzel is to short'))
   }
 
-  if (kuerzel.length > KUERZEL_LENGTH) {
+  if (kuerzel.length > MAX_KUERZEL_LENGTH) {
     return Promise.reject(new Error('Kuerzel is to long'))
   }
 
