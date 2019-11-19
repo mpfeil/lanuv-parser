@@ -1,6 +1,6 @@
 {
   "name": "lanuv-parser",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Parse LANUV website for LUQS (Air Quality) stations",
   "license": "MIT",
   "repository": "mpfeil/lanuv-parser",
