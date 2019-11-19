@@ -105,6 +105,8 @@ luqs.station = (kuerzel, options = {}) => {
           steckbrief.ende_messung
         ] = tmpSteckbrief
         steckbrief.image = `${messortBildUrl}${steckbrief.kuerzel.toUpperCase()}.jpg`
+        steckbrief.longitude = steckbrief.longitude.replace(',', '.')
+        steckbrief.latitude = steckbrief.latitude.replace(',', '.')
         resolve([steckbrief])
       })
       .catch(error => {

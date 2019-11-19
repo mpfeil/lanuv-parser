@@ -22,6 +22,12 @@ test('luqs.station() should reject with Error is to long', async t => {
   t.is(error.message, 'Kuerzel is to long')
 })
 
+test('luqs.station("unna") should return detailed information about a specific station', async t => {
+  const details = await luqs.station('unna')
+  t.truthy(Array.isArray(details))
+  t.is(details[0].kuerzel, 'UNNA')
+})
+
 test('luqs.aktuell() should resolve with array', async t => {
   const currentMeasurements = await luqs.aktuell()
   t.truthy(Array.isArray(currentMeasurements))
