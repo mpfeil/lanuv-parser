@@ -4,7 +4,13 @@ import luqs from '.'
 test('luqs()', async t => {
   const stations = await luqs()
   t.truthy(Array.isArray(stations))
-  t.is(stations.length, 165)
+  t.truthy(stations.length > 160)
+})
+
+test('luqs({ allStations: true })', async t => {
+  const stations = await luqs({ allStations: true })
+  t.truthy(Array.isArray(stations))
+  t.truthy(stations.length > 578)
 })
 
 test('luqs.station() should reject with TypeError', async t => {

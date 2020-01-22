@@ -17,9 +17,13 @@ const MAX_KUERZEL_LENGTH = 6
  *
  * @param {String} url
  */
-const query = (url) => {
+const query = (url, options = {}) => {
   return new Promise((resolve, reject) => {
-    request(url, function (error, response, body) {
+    request({
+      url,
+      method: options.method ? options.method : 'GET',
+      form: options.form ? options.form : undefined
+    }, function (error, response, body) {
       if (error) {
         reject(error)
       }
@@ -37,12 +41,23 @@ const query = (url) => {
 /**
  * Requests LUQS stations website and parse stations table.
  *
- * @param {*} options
+ * @param options.allStations return all stations if true
  * @returns Promise resolves with an array of all luqs stations
  */
 const luqs = (options = {}) => {
   return new Promise((resolve, reject) => {
-    query(messorteUrl)
+    let requestOptions
+    if (options.allStations === true) {
+      requestOptions = {
+        method: 'POST',
+        form: {
+          auswahl_plz: 'alle',
+          auswahl_status: 'alle',
+          auswahl_klassifizierung: 'alle'
+        }
+      }
+    }
+    query(messorteUrl, requestOptions)
       .then($ => {
         const stations = []
         const tableRows = $('#wrapper > table > tbody > tr')

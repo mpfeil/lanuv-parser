@@ -28,6 +28,10 @@ Returns an array containing all LUQS stations.
 
 Source: https://www.lanuv.nrw.de/luqs/messorte/messorte.php
 
+Optionally accepts an `options` object as first parameter:
+
+- `allStations: true` returns all active and inactive stations.
+
 ### luqs.station(kuerzel)
 Returns detailed information about a specific LUQS station
 
