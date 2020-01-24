@@ -37,6 +37,10 @@ Returns detailed information about a specific LUQS station
 
 Source: https://www.lanuv.nrw.de/luqs/messorte/steckbrief.php?ort={KUERZEL}
 
+Optionally accepts an `options` object as first parameter:
+
+- `format: json|geojson` return the details in the specified format.
+
 ### luqs.aktuell()
 
 Returns the current measurements for all LUQS stations.

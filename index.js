@@ -11,6 +11,11 @@ const messwerteUrl = 'https://www.lanuv.nrw.de/fileadmin/lanuv/luft/immissionen/
 const MIN_KUERZEL_LENGTH = 4
 const MAX_KUERZEL_LENGTH = 6
 
+const geojson = {
+  type: 'FeatureCollection',
+  features: []
+}
+
 /**
  * Helper function to query a url and load
  * response with cheeriojs
@@ -80,6 +85,7 @@ const luqs = (options = {}) => {
  * details of the station.
  *
  * @param string kuerzel
+ * @param options.format {String=json,geojson} returns the selected format
  * @returns Promise resolves with an object
  */
 luqs.station = (kuerzel, options = {}) => {
@@ -119,9 +125,28 @@ luqs.station = (kuerzel, options = {}) => {
           steckbrief.start_messung,
           steckbrief.ende_messung
         ] = tmpSteckbrief
+
         steckbrief.image = `${messortBildUrl}${steckbrief.kuerzel.toUpperCase()}.jpg`
         steckbrief.longitude = steckbrief.longitude.replace(',', '.')
         steckbrief.latitude = steckbrief.latitude.replace(',', '.')
+
+        if (options.format === 'geojson') {
+          geojson.features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [
+                parseFloat(steckbrief.longitude),
+                parseFloat(steckbrief.latitude)
+              ]
+            },
+            properties: {
+              ...steckbrief
+            }
+          })
+          resolve(geojson)
+        }
+
         resolve([steckbrief])
       })
       .catch(error => {
