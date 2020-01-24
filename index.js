@@ -11,11 +11,6 @@ const messwerteUrl = 'https://www.lanuv.nrw.de/fileadmin/lanuv/luft/immissionen/
 const MIN_KUERZEL_LENGTH = 4
 const MAX_KUERZEL_LENGTH = 6
 
-const geojson = {
-  type: 'FeatureCollection',
-  features: []
-}
-
 /**
  * Helper function to query a url and load
  * response with cheeriojs
@@ -131,13 +126,18 @@ luqs.station = (kuerzel, options = {}) => {
         steckbrief.latitude = steckbrief.latitude.replace(',', '.')
 
         if (options.format === 'geojson') {
+          const geojson = {
+            type: 'FeatureCollection',
+            features: []
+          }
+
           geojson.features.push({
             type: 'Feature',
             geometry: {
               type: 'Point',
               coordinates: [
-                parseFloat(steckbrief.longitude),
-                parseFloat(steckbrief.latitude)
+                Number(steckbrief.longitude),
+                Number(steckbrief.latitude)
               ]
             },
             properties: {
@@ -145,6 +145,7 @@ luqs.station = (kuerzel, options = {}) => {
             }
           })
           resolve(geojson)
+          return
         }
 
         resolve([steckbrief])
