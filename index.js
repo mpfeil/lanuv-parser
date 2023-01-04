@@ -47,7 +47,20 @@ const query = (url, options = {}) => {
 const luqs = (options = {}) => {
   return new Promise((resolve, reject) => {
     let requestOptions
-    if (options.allStations === true) {
+    const { status, allStations } = options
+    if (status) {
+      requestOptions = {
+        method: 'POST',
+        form: {
+          auswahl_plz: 'alle',
+          auswahl_status: status,
+          auswahl_klassifizierung: 'alle'
+        }
+      }
+    }
+
+    if (allStations) {
+      console.info('Option allStations is deprecated and will be removed in a future release!')
       requestOptions = {
         method: 'POST',
         form: {
@@ -57,6 +70,7 @@ const luqs = (options = {}) => {
         }
       }
     }
+
     query(messorteUrl, requestOptions)
       .then($ => {
         const stations = []
