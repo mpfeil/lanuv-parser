@@ -11,6 +11,16 @@ const messwerteUrl = 'https://www.lanuv.nrw.de/fileadmin/lanuv/luft/immissionen/
 const MIN_KUERZEL_LENGTH = 4
 const MAX_KUERZEL_LENGTH = 6
 
+function capitalizeFirstLetter (string) {
+  if (string.includes('+')) {
+    const splitted = string.split('+')
+    const first = capitalizeFirstLetter(splitted[0])
+    const second = capitalizeFirstLetter(splitted[1])
+    return `${first}+${second}`
+  }
+  return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
 /**
  * Helper function to query a url and load
  * response with cheeriojs
@@ -43,6 +53,7 @@ const query = (url, options = {}) => {
  *
  * @param ort
  * @param kurzname
+ * @param klassifizierung
  * @param status
  * @param options.allStations return all stations if true
  * @returns Promise resolves with an array of all luqs stations
@@ -50,11 +61,12 @@ const query = (url, options = {}) => {
 const luqs = (options = {}) => {
   return new Promise((resolve, reject) => {
     const formData = {}
-    const { ort, kurzname, status, allStations } = options
+    const { ort, kurzname, klassifizierung, status, allStations } = options
 
     if (ort) formData.suche_ort = ort
     if (kurzname) formData.suche_kurzname = kurzname
     if (status) formData.auswahl_status = status
+    if (klassifizierung) formData.auswahl_klassifizierung = capitalizeFirstLetter(klassifizierung)
 
     if (allStations) {
       console.info('Option allStations is deprecated and will be removed in a future release!')
