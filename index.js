@@ -22,7 +22,7 @@ const query = (url, options = {}) => {
     request({
       url,
       method: options.method ? options.method : 'GET',
-      form: options.form ? options.form : undefined
+      formData: options.formData ? options.formData : undefined
     }, function (error, response, body) {
       if (error) {
         reject(error)
@@ -41,37 +41,30 @@ const query = (url, options = {}) => {
 /**
  * Requests LUQS stations website and parse stations table.
  *
+ * @param ort
+ * @param kurzname
+ * @param status
  * @param options.allStations return all stations if true
  * @returns Promise resolves with an array of all luqs stations
  */
 const luqs = (options = {}) => {
   return new Promise((resolve, reject) => {
-    let requestOptions
-    const { status, allStations } = options
-    if (status) {
-      requestOptions = {
-        method: 'POST',
-        form: {
-          auswahl_plz: 'alle',
-          auswahl_status: status,
-          auswahl_klassifizierung: 'alle'
-        }
-      }
-    }
+    const formData = {}
+    const { ort, kurzname, status, allStations } = options
+
+    if (ort) formData.suche_ort = ort
+    if (kurzname) formData.suche_kurzname = kurzname
+    if (status) formData.auswahl_status = status
 
     if (allStations) {
       console.info('Option allStations is deprecated and will be removed in a future release!')
-      requestOptions = {
-        method: 'POST',
-        form: {
-          auswahl_plz: 'alle',
-          auswahl_status: 'alle',
-          auswahl_klassifizierung: 'alle'
-        }
-      }
+      formData.auswahl_status = 'alle'
     }
 
-    query(messorteUrl, requestOptions)
+    query(messorteUrl, {
+      method: 'POST',
+      formData: formData
+    })
       .then($ => {
         const stations = []
         const tableRows = $('#wrapper > table > tbody > tr')

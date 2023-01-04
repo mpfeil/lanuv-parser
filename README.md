@@ -30,6 +30,8 @@ Source: https://www.lanuv.nrw.de/luqs/messorte/messorte.php
 
 Optionally accepts an `options` object as first parameter:
 
+- `ort` search for a specifc city
+- `kurzname` search for specific short name of stations
 - `status: aktiv|inaktiv|alle` returns stations with the specified status
 - `allStations: true` returns all active and inactive stations. Overrides the `status` option **Deprecated**
 
