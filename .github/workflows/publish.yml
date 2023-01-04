@@ -1,62 +1,38 @@
-name: Create release & publish on npm
+name: Build lanuv parser package and publish
+
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    branches:
+      - main
+    types: [released]
 
 jobs:
-  build:
-
+  test:
+    name: Test package
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
-
+        node-version: [16.x]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - name: yarn install and test
-        run: |
-          yarn install
-          yarn test
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm install
+      - run: npm run build --if-present
+      - run: npm test
         env:
           CI: true
-
-  release:
-    name: Create Release
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v1
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      - name: Archive language files
+        uses: actions/upload-artifact@v2
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-
-  publish-npm:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-          registry-url: https://registry.npmjs.org/
-      - name: yarn install and test
+          name: lanuv-parser
+          path: dist
+      - name: Release new version
         run: |
-          yarn install
-          npm publish
+          npm version ${{ github.event.release.tag_name }} --no-git-tag-version --no-commit-hooks
+          npm publish --access public
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
